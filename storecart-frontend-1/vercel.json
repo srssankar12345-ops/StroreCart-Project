@@ -4,7 +4,7 @@
     { "src": "package.json", "use": "@vercel/node" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "src/server.js" }
+    { "src": "/(.*)", "dest": "src/server.js" }
   ],
   "installCommand": "npm install && npx prisma generate",
   "buildCommand": "npm run build"
