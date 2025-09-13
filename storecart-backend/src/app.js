@@ -18,13 +18,13 @@ app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 
 // CORS - allow your frontend origin(s)
 const allowedOrigins = (process.env.CORS_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
+console.log(process.env.CORS_ORIGINS)
 app.use(cors({
   origin: allowedOrigins.length ? allowedOrigins : true, // change in prod
   credentials: true
 }));
 
 // Rate limiter (global)
-console.log(rateLimiter)
 app.use(rateLimiter);
 
 // Routes
