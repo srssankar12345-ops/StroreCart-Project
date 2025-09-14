@@ -1,10 +1,11 @@
 # render.yaml - Deploy config for Render.com
 services:
   - type: web
-    name: backend
+    name: storecart-backend
     runtime: node
-    buildCommand: "npm install --no-audit --only=production && npx prisma generate"
-    startCommand: "npm start"
+    buildCommand: cd storecart-backend && npm install
+    startCommand: cd storecart-backend && npm start
+    rootDirectory: storecart-backend
     envVars:
       - key: NODE_ENV
         value: production
