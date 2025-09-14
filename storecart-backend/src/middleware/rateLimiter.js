@@ -16,7 +16,7 @@ export const rateLimiter = (maxRequests = 5, windowMs = 60*1000*10) => {
       }
 
       await redisClient.incr(key);
-      if (parseInt(current) === 0) {
+      if (current === 0) {
         await redisClient.expire(key, windowMs / 1000);
       }
 
