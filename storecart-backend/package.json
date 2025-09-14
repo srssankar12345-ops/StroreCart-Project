@@ -4,9 +4,8 @@
   "main": "src/server.js",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "build": "echo 'Nothing to build for backend'",
     "start": "node src/server.js",
-    "vercel-build": "prisma generate"
+    "build": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.16.1",
