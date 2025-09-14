@@ -1,6 +1,6 @@
 import redisClient from '../config/redis.js';
 
-export const rateLimiter = (maxRequests = 5, windowMs = 60*3) => {
+export const rateLimiter = (maxRequests = 5, windowMs = 60*1000*5) => {
   return async (req, res, next) => {
     const ip = req.ip || req.connection.remoteAddress;
     const key = `rateLimit:${ip}`;
