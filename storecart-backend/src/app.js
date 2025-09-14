@@ -31,10 +31,9 @@ app.use(rateLimiter);
 app.use("/api", routes);
 
 // 404
-app.use((req, res, next) => {
-  res.status(404).json({ success: false, message: "Not Found" });
-});
-
+if (process.env.NODE_ENV !== "production") {
+  app.listen(4000, () => console.log("StoreCart running on http://localhost:4000"));
+}
 // Error handler
 app.use(errorHandler);
 
