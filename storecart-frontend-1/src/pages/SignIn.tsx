@@ -22,9 +22,10 @@ const SignIn = () => {
   e.preventDefault();
   setIsLoading(true);
 
+  let res;
   try {
     console.log(loginData)
-    const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/signin`, {
+     res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/signin`, {
       email: loginData.userEmail,
       password: loginData.userPwd,
     }, {
@@ -41,6 +42,7 @@ const SignIn = () => {
 
     navigate("/home");
   } catch (err: any) {
+    console.log(res)
     console.error(err);
     toast({
       title: "Login Failed",
