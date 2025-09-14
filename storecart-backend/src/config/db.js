@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from  '../../../storecart-backend/src/generated/prisma/client/index.js'
 
 let prisma;
 
