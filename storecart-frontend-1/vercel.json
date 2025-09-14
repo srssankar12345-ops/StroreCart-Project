@@ -1,22 +1,9 @@
 {
   "version": 2,
   "builds": [
-    {
-      "src": "src/server.js",
-      "use": "@vercel/node"
-    }
+    { "src": "package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
   ],
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/server.js"
-    }
-  ],
-  "installCommand": "npm install && npx prisma generate",
-  "buildCommand": "prisma migrate deploy",
-  "functions": {
-    "src/**/*.js": {
-      "includeFiles": ["node_modules/.prisma/client/**"]
-    }
-  }
+    { "src": "/(.*)", "dest": "/index.html" }
+  ]
 }
