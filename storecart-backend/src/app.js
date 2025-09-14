@@ -1,40 +1,31 @@
-const express = require("express");
-const cookieParser = require("cookie-parser");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const cors = require("cors");
-const rateLimiter  = require("./middleware/rateLimiter.js");
-const routes = require("./routes/index.js");
-const { errorHandler } = require("./middleware/errorMiddleware.js");
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import router from './routes/index.js';
+import { errorHandler } from './middleware/errorMiddlware.js'
 
 const app = express();
 
-// Basic middleware
+// Security
 app.use(helmet());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+app.use(cors({ origin: process.env.FRONTEND_URL, credentials: true }));
 
-// CORS - allow your frontend origin(s)
-const allowedOrigins = (process.env.CORS_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
-console.log(process.env.CORS_ORIGINS)
-app.use(cors({
-  origin: allowedOrigins.length ? allowedOrigins : true, // change in prod
-  credentials: true
-}));
+// Logging
+if (process.env.NODE_ENV !== 'production') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
 
-// Rate limiter (global)
-app.use(rateLimiter);
+// Body parsing
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Routes
-app.use("/api", routes);
+app.use("/api" , router);
 
-// 404
-if (process.env.NODE_ENV !== "production") {
-  app.listen(4000, () => console.log("StoreCart running on http://localhost:4000"));
-}
-// Error handler
+// Error handler (last middleware)
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

@@ -1,0 +1,26 @@
+# render.yaml - Deploy config for Render.com
+services:
+  - type: web
+    name: backend
+    runtime: node
+    buildCommand: "npm install --no-audit --only=production && npx prisma generate"
+    startCommand: "npm start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+      - key: DATABASE_URL
+        valueFrom:
+          secretName: DATABASE_URL
+          key: DATABASE_URL
+      - key: REDIS_URL
+        valueFrom:
+          secretName: REDIS_URL
+          key: REDIS_URL
+      - key: JWT_SECRET
+        valueFrom:
+          secretName: JWT_SECRET
+          key: JWT_SECRET
+      - key: REDIS_SESSION_TTL
+        value: "3600"

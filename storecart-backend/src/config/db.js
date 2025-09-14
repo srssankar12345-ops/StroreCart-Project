@@ -1,11 +1,12 @@
-import { PrismaClient } from  '../../../storecart-backend/src/generated/prisma/client/index.js'
+import { PrismaClient } from '@prisma/client';
+import { DATABASE_URL } from '../config/env.js';
 
-let prisma;
-
-if (!global.prisma) {
-  global.prisma = new PrismaClient();
-}
-
-prisma = global.prisma;
+const prisma = new PrismaClient({
+  datasources: {
+    db: {
+      url: DATABASE_URL,
+    },
+  },
+});
 
 export default prisma;

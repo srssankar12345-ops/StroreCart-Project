@@ -1,10 +1,10 @@
-const express = require("express");
-const router = express.Router();
-const controller = require("./user.controller");
+import { Router } from 'express';
+import { register, login } from './user.controller.js';
+import { rateLimiter } from '../../middleware/rateLimiter.js';
 
-router.post("/signup", controller.signup);
-router.post("/login", controller.login);
-router.post("/refresh", controller.refresh);
-router.post("/logout", controller.logout);
+const router = Router();
 
-module.exports = router;
+router.post('/signup', register);
+router.post('/signin', rateLimiter(2,60), login);
+
+export default router;

@@ -1,27 +1,10 @@
-const jwt = require("jsonwebtoken");
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../config/env.js';
 
-function signAccessToken(user) {
-  const payload = {};
-  const options = {
-    subject: String(user.id),
-    expiresIn: process.env.JWT_ACCESS_EXPIRY || "15m",
-    issuer: "storecart"
-  };
-  return jwt.sign(payload, process.env.JWT_ACCESS_TOKEN_SECRET, options);
-}
+export const signToken = (payload) => {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+};
 
-function signRefreshToken(user) {
-  const payload = {};
-  const options = {
-    subject: String(user.id),
-    expiresIn: process.env.JWT_REFRESH_EXPIRY || "30d",
-    issuer: "storecart"
-  };
-  return jwt.sign(payload, process.env.JWT_REFRESH_TOKEN_SECRET, options);
-}
-
-function verifyRefreshToken(token) {
-  return jwt.verify(token, process.env.JWT_REFRESH_TOKEN_SECRET);
-}
-
-module.exports = { signAccessToken, signRefreshToken, verifyRefreshToken };
+export const verifyToken = (token) => {
+  return jwt.verify(token, JWT_SECRET);
+};

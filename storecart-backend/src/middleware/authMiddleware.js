@@ -1,29 +1,37 @@
-const jwt = require("jsonwebtoken");
-const createError = require("http-errors");
-const prisma = require("../config/db");
+import { verifyToken } from '../utils/jwt.js';
+import redisClient from '../config/redis.js';
+import { sendResponse } from '../utils/response.js';
 
-const authenticate = async (req, res, next) => {
+export const authenticate = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return sendResponse(res, 401, null, 'Authorization header required');
+  }
+
+  const token = authHeader.substring(7);
+
   try {
-    const auth = req.headers.authorization;
-    if (!auth || !auth.startsWith("Bearer ")) throw createError(401, "No authorization token");
-    const token = auth.split(" ")[1];
-    const payload = jwt.verify(token, process.env.JWT_ACCESS_TOKEN_SECRET);
-    // attach user minimal info
-    const user = await prisma.user.findUnique({ where: { id: payload.sub }});
-    if (!user) throw createError(401, "User not found");
-    req.user = { id: user.id, email: user.email, role: user.role };
+    // Check Redis cache first
+    const cachedUser = await redisClient.get(`user:${token}`);
+    if (cachedUser) {
+      req.user = JSON.parse(cachedUser);
+      return next();
+    }
+
+    // Verify JWT
+    const decoded = verifyToken(token);
+    req.user = decoded;
+
+    // Cache in Redis for future requests
+    await redisClient.setEx(
+      `user:${token}`,
+      parseInt(process.env.REDIS_SESSION_TTL) || 3600,
+      JSON.stringify(decoded)
+    );
+
     next();
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    return sendResponse(res, 403, null, 'Invalid or expired token');
   }
 };
-
-// convenience: role guard
-const authorize = (roles = []) => (req, res, next) => {
-  if (!req.user) return next(createError(401, "Not authenticated"));
-  if (!roles.length) return next();
-  if (!roles.includes(req.user.role)) return next(createError(403, "Forbidden"));
-  next();
-};
-
-module.exports = { authenticate, authorize };

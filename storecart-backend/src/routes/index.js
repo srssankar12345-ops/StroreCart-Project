@@ -1,13 +1,8 @@
-const express = require("express");
-const router = express.Router();
-const userRoutes = require("../modules/user/user.routes.js");
-const {getAllData} = require('../../data.js')
+import { Router } from 'express';
+import userRoutes from '../modules/user/user.routes.js';
 
-// prefix /api/users
-router.use("/users", userRoutes);
-router.use("/getData" , getAllData)
-// example protected route
-// const { authenticate } = require("../middleware/authMiddleware");
-// router.get("/me", authenticate, (req, res) => res.json({ user: req.user }));
+const router = Router();
 
-module.exports = router;
+router.use('/users', userRoutes);
+
+export default router;

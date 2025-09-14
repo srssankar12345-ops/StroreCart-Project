@@ -1,26 +1,15 @@
-module.exports = function loadEnv() {
-  const dotenv = require("dotenv");
-  const result = dotenv.config();
-  if (result.error) {
-    console.warn("No .env file loaded (ensure environment variables are set).");
-  }
+import dotenv from 'dotenv';
 
-  const required = [
-    "DATABASE_URL",
-    "UPSTASH_REDIS_REST_URL",
-    "UPSTASH_REDIS_REST_TOKEN",
-    "JWT_ACCESS_TOKEN_SECRET",
-    "JWT_REFRESH_TOKEN_SECRET",
-    "JWT_ACCESS_EXPIRY",
-    "JWT_REFRESH_EXPIRY"
-  ];
+dotenv.config();
 
-  // in non-development, ensure required exist
-  if (process.env.NODE_ENV === "production") {
-    required.forEach(k => {
-      if (!process.env[k]) {
-        throw new Error(`Missing required env var: ${k}`);
-      }
-    });
-  }
-};
+export const PORT = process.env.PORT || 3000;
+export const NODE_ENV = process.env.NODE_ENV || 'development';
+export const JWT_SECRET = process.env.JWT_SECRET;
+export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
+export const REDIS_SESSION_TTL = parseInt(process.env.REDIS_SESSION_TTL) || 3600;
+
+// Database
+export const DATABASE_URL = process.env.DATABASE_URL;
+
+// Redis
+export const REDIS_URL = process.env.REDIS_URL;

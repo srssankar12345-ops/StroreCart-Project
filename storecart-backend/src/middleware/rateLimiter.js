@@ -1,26 +1,29 @@
-const redis = require("../config/redis");
+import redisClient from '../config/redis.js';
 
-const WINDOW_SECONDS = parseInt(process.env.RATE_LIMIT_WINDOW || "60"); // 60s
-const MAX_REQUESTS = parseInt(process.env.RATE_LIMIT_MAX || "5"); // per window
+export const rateLimiter = (maxRequests = 5, windowMs = 60*3) => {
+  return async (req, res, next) => {
+    const ip = req.ip || req.connection.remoteAddress;
+    const key = `rateLimit:${ip}`;
 
-async function rateLimiter(req, res, next) {
-  try {
-    const ip = req.ip || req.headers["x-forwarded-for"] || req.connection.remoteAddress || "unknown";
-    const key = `rl:${ip}:${Math.floor(Date.now()/1000 / WINDOW_SECONDS)}`; // bucket
-    const current = await redis.incr(key);
-    if (current === 1) {
-      // set expiry
-      await redis.expire(key, WINDOW_SECONDS);
+    try {
+      const current = await redisClient.get(key);
+      if (current !== null && parseInt(current) >= maxRequests) {
+        return res.status(429).json({
+          success: false,
+          message: 'Too many requests, please try again later.',
+          retryAfter: windowMs / 1000,
+        });
+      }
+
+      await redisClient.incr(key);
+      if (parseInt(current) === 0) {
+        await redisClient.expire(key, windowMs / 1000);
+      }
+
+      next();
+    } catch (error) {
+      console.error('Rate limiter error:', error);
+      next(); // Fail open
     }
-    if (current > MAX_REQUESTS) {
-      return res.status(429).json({ success: false, message: "Too many requests" });
-    }
-    next();
-  } catch (err) {
-    // if redis fail, don't block; go ahead (fail-open)
-    console.warn("Rate limiter error:", err);
-    next();
-  }
-}
-
-module.exports =  rateLimiter ;
+  };
+};

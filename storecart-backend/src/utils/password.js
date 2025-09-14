@@ -1,12 +1,10 @@
-const bcrypt = require("bcryptjs");
-const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || "12");
+import bcrypt from 'bcrypt';
 
-async function hashPassword(plain) {
-  return bcrypt.hash(plain, SALT_ROUNDS);
-}
+export const hashPassword = async (password) => {
+  const saltRounds = 12;
+  return await bcrypt.hash(password, saltRounds);
+};
 
-async function comparePassword(plain, hashed) {
-  return bcrypt.compare(plain, hashed);
-}
-
-module.exports = { hashPassword, comparePassword };
+export const comparePassword = async (password, hashedPassword) => {
+  return await bcrypt.compare(password, hashedPassword);
+};
