@@ -27,12 +27,12 @@ export const login = async (req, res) => {
       return sendResponse(res, 400, null, 'Email and password required');
     }
 
-    const user = await loginUser(user.id, email, password);
+    const user = await loginUser( email, password);
 
     const token = signToken({ id: user.id, email: user.email });
 
     await redisClient.set(
-      `session:${user.id}`,
+      `session:${user.email}`,
       JSON.stringify({
         id: user.id,
         email: user.email,
