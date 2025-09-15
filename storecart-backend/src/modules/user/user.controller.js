@@ -39,7 +39,7 @@ export const login = async (req, res) => {
         role: user.role,
         loginAt: Date.now(),
       }),
-      { EX: 60 * 60 * 24 } // 1 day expiry
+      { EX: 60 * 60 * 24 } 
     );
 
     sendResponse(res, 200, { token, user: { id: user.id, email: user.email, name: user.name } }, 'Login successful');

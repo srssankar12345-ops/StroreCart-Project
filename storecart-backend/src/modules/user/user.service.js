@@ -21,14 +21,10 @@ export const registerUser = async (email, password, name) => {
 
 export const loginUser = async (email, password) => {
   const redisKey = `session:${email}`;
-  console.log(redisKey)
 
   const cachedUser = await redisClient.get(redisKey);
   if (cachedUser) {
     const user = JSON.parse(cachedUser);
-    const isValid = await comparePassword(password, user.password);
-    if (!isValid) throw new Error('Invalid email or password');
-
     console.log(`Redis hit -> user:${email}`);
     return user;
   }
