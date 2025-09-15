@@ -21,14 +21,13 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    const {id, email, password } = req.body;
+    const { email, password } = req.body;
 
     if (!email || !password) {
       return sendResponse(res, 400, null, 'Email and password required');
     }
 
-    const user = await loginUser(id,email, password);
-    console.log(id,email, password)
+    const user = await loginUser(user.id, email, password);
 
     const token = signToken({ id: user.id, email: user.email });
 
