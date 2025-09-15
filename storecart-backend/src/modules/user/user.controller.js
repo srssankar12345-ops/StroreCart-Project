@@ -28,6 +28,7 @@ export const login = async (req, res) => {
     }
 
     const user = await loginUser(id,email, password);
+    console.log(id,email, password)
 
     const token = signToken({ id: user.id, email: user.email });
 
