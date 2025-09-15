@@ -1,6 +1,7 @@
 import { sendResponse } from '../../utils/respons.js';
 import { registerUser, loginUser } from './user.service.js';
 import { signToken } from '../../utils/jwt.js';
+import redisClient from '../../config/redis.js';
 
 export const register = async (req, res) => {
   try {
@@ -11,6 +12,17 @@ export const register = async (req, res) => {
     }
 
     const user = await registerUser(email, password, name);
+
+    await redisClient.set(
+      `session:${user.id}`,
+      JSON.stringify({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        loginAt: Date.now(),
+      }),
+      { EX: 60 * 60 * 24 } // 1 day expiry
+    );
 
     sendResponse(res, 201, { id: user.id, email: user.email, name: user.name }, 'User registered successfully');
   } catch (error) {
