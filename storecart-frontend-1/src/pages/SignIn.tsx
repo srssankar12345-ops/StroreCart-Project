@@ -24,7 +24,6 @@ const SignIn = () => {
 
   let res;
   try {
-    console.log(loginData)
      res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/signin`, {
       email: loginData.userEmail,
       password: loginData.userPwd,
