@@ -21,6 +21,7 @@ export const registerUser = async (email, password, name) => {
 
 export const loginUser = async (email, password) => {
   const redisKey = `session:${email}`;
+  console.log(redisKey)
 
   const cachedUser = await redisClient.get(redisKey);
   if (cachedUser) {
