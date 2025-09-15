@@ -64,7 +64,7 @@ const SignUp = () => {
       title: "Account Created Successfully",
       description: "Welcome to storeCart! You can now start shopping.",
     });
-    navigate("/home");
+    navigate("/signin");
   } catch (err: any) {
     console.error(err);
     toast({
