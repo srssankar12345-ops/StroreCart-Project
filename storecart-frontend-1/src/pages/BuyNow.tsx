@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 
 const BuyNow = () => {
   const location = useLocation();
-  const { product } = location.state || {}; // get product from navigation state
+  const { product } = location.state || {}; 
 
   const [formData, setFormData] = useState({
     name: "",
