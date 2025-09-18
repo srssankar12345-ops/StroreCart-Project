@@ -1,82 +1,44 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import productsData from "./products-json/allProduct.json"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ShoppingBag, 
-  Search, 
-  Filter, 
-  Star, 
-  Heart, 
+
+import {
+  ShoppingBag,
+  Search,
+  Filter,
+  Star,
+  Heart,
   ShoppingCart,
   User,
   Menu,
   Grid3X3
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Mock product data
-  const products = [
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 99.99,
-      image: "/placeholder.svg",
-      rating: 4.5,
-      category: "electronics",
-      badge: "Best Seller"
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      price: 199.99,
-      image: "/placeholder.svg",
-      rating: 4.8,
-      category: "electronics",
-      badge: "New"
-    },
-    {
-      id: 3,
-      name: "Running Shoes",
-      price: 79.99,
-      image: "/placeholder.svg",
-      rating: 4.3,
-      category: "fashion",
-      badge: "Sale"
-    },
-    {
-      id: 4,
-      name: "Coffee Maker",
-      price: 149.99,
-      image: "/placeholder.svg",
-      rating: 4.6,
-      category: "home",
-      badge: ""
-    },
-    {
-      id: 5,
-      name: "Laptop Backpack",
-      price: 59.99,
-      image: "/placeholder.svg",
-      rating: 4.4,
-      category: "fashion",
-      badge: ""
-    },
-    {
-      id: 6,
-      name: "Bluetooth Speaker",
-      price: 69.99,
-      image: "/placeholder.svg",
-      rating: 4.7,
-      category: "electronics",
-      badge: "Featured"
+  const [products, setProducts] = useState<any[]>([]);
+
+  useEffect(() => {
+    const storedProducts = localStorage.getItem("products");
+
+    if (storedProducts) {
+      setProducts(JSON.parse(storedProducts));
+    } else {
+      setProducts(productsData);
+      localStorage.setItem("products", JSON.stringify(productsData));
     }
-  ];
+  }, []);
+
+  const navigate = useNavigate();
+   const buyPage = (product) => {
+    navigate("/BuyNow", { state: { product } }); // pass product via state
+  };
 
   const categories = [
     { id: "all", name: "All Products" },
@@ -84,7 +46,6 @@ const Home = () => {
     { id: "fashion", name: "Fashion" },
     { id: "home", name: "Home & Living" }
   ];
-
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === "all" || product.category === selectedCategory;
@@ -102,7 +63,7 @@ const Home = () => {
                 <ShoppingBag className="h-8 w-8 text-primary" />
                 <span className="text-2xl font-bold text-foreground">storeCart</span>
               </Link>
-              
+
               {/* Search Bar */}
               <div className="hidden md:flex relative w-96">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
@@ -200,13 +161,13 @@ const Home = () => {
                 <Card key={product.id} className="border-border hover:shadow-lg transition-shadow group">
                   <CardContent className="p-0">
                     <div className="relative">
-                      <img 
-                        src={product.image} 
+                      <img
+                        src={product.image}
                         alt={product.name}
                         className="w-full h-48 object-cover rounded-t-lg"
                       />
                       {product.badge && (
-                        <Badge 
+                        <Badge
                           className="absolute top-2 left-2"
                           variant={product.badge === "Sale" ? "destructive" : "default"}
                         >
@@ -221,22 +182,32 @@ const Home = () => {
                         <Heart className="h-4 w-4" />
                       </Button>
                     </div>
-                    
+
                     <div className="p-4">
                       <h3 className="font-semibold text-foreground mb-2">{product.name}</h3>
-                      
-                      <div className="flex items-center space-x-1 mb-2">
+
+                      <div className="flex items-center ">
                         <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                         <span className="text-sm text-muted-foreground">{product.rating}</span>
+                        <div className="ml-2">
+                          <span className="text-lg font-bold text-primary">${product.price}</span>
+                        </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-primary">${product.price}</span>
-                        <Button size="sm">
+                        <Button size="lg" className="h-10 w-full mt-2">
                           <ShoppingCart className="h-4 w-4 mr-1" />
                           Add to Cart
                         </Button>
                       </div>
+
+                      <div className="flex items-center justify-between">
+                        <Button size="lg" className="h-10 w-full mt-2" onClick={() => buyPage(product)}>
+                          <ShoppingCart className="h-4 w-4 mr-1" />
+                          Buy Now
+                        </Button>
+                      </div>
+
                     </div>
                   </CardContent>
                 </Card>
